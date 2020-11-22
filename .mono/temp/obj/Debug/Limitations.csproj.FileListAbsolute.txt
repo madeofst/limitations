@@ -1,0 +1,8 @@
+C:\Users\Mike\dev\csharp\limitations\.mono\temp\obj\Debug\Limitations.csprojAssemblyReference.cache
+C:\Users\Mike\dev\csharp\limitations\.mono\temp\obj\Debug\Limitations.AssemblyInfoInputs.cache
+C:\Users\Mike\dev\csharp\limitations\.mono\temp\obj\Debug\Limitations.AssemblyInfo.cs
+C:\Users\Mike\dev\csharp\limitations\.mono\temp\obj\Debug\Limitations.csproj.CoreCompileInputs.cache
+C:\Users\Mike\dev\csharp\limitations\.mono\temp\bin\Debug\Limitations.dll
+C:\Users\Mike\dev\csharp\limitations\.mono\temp\bin\Debug\Limitations.pdb
+C:\Users\Mike\dev\csharp\limitations\.mono\temp\obj\Debug\Limitations.dll
+C:\Users\Mike\dev\csharp\limitations\.mono\temp\obj\Debug\Limitations.pdb

@@ -42,7 +42,6 @@ public class Player : KinematicBody2D
     public override void _Input(InputEvent @event)
     {
         jumping = detectJump(@event);
-        //update vertical position
         if (jumping == Jump.FULL) velocity.y = (float)JUMPSTRENGTH;
         else if (jumping == Jump.REDUCED) velocity.y -= (float)(JUMPSTRENGTH/3);
     }

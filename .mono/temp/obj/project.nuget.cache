@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "DdzUMIpUr5yRh/C5/8pXhdzsJqymtY8x9occkfbsdo9b6mG/E9TP3n1xZcz1cCKKgjuTVkoPZxuAef+EsmCqzg==",
+  "dgSpecHash": "YeEc8unIhfFzlPJjpNgAWOiQzy+A+M9DDgBQiieyL0BHlIlTqaYlcK3EjOdjMMpQucf+YbW+lzTwoz0T0tWbyA==",
   "success": true,
-  "projectFilePath": "C:\\Users\\user\\dev\\Limitations\\limitations\\Limitations.csproj",
+  "projectFilePath": "C:\\Users\\Mike\\dev\\csharp\\limitations\\Limitations.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }

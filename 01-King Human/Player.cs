@@ -15,8 +15,9 @@ public class Player : KinematicBody2D
     private Vector2 baselineGravity;
     private Vector2 velocity;
     private AnimationPlayer animationPlayer;
+    private Jump jumping;
 
-    enum jump
+    enum Jump
     {
         FULL,
         REDUCED,
@@ -28,15 +29,26 @@ public class Player : KinematicBody2D
         horizontalDirection = new Vector2(Vector2.Right);
         baselineGravity = new Vector2(0,TERMINALVELOCITY);
         velocity = new Vector2(baselineGravity);
-        animationPlayer = GetNode<AnimationPlayer>("PlayerAnimationPlayer");
+        animationPlayer = GetNode<AnimationPlayer>("AnimationPlayer");
     }
 
     public override void _PhysicsProcess(float delta)
     {   
         Vector2 inputVector = detectDirectionalInput();
-        jump jumping = detectJump();
         updatePlayerPosition(inputVector, jumping, delta);
         updateAnimation(inputVector, jumping, delta);
+    }
+
+    public override void _Input(InputEvent @event)
+    {
+        jumping = detectJump(@event);
+    }
+
+    private Jump detectJump(InputEvent @event)
+    {
+        if (@event.IsActionPressed("ui_jump") & IsOnFloor()) return Jump.FULL;
+        else if (@event.IsActionReleased("ui_jump")) return Jump.REDUCED;
+        else return Jump.NONE;
     }
 
     private Vector2 detectDirectionalInput()
@@ -46,18 +58,11 @@ public class Player : KinematicBody2D
         return inputVector;
     }
 
-    private jump detectJump()
-    {
-        if (Input.IsActionJustPressed("ui_jump") & IsOnFloor()) return jump.FULL;
-        else if (Input.IsActionJustReleased("ui_jump")) return jump.REDUCED;
-        else return jump.NONE;
-    }
-
-    private void updatePlayerPosition(Vector2 inputVector, jump jumping, float delta)
+    private void updatePlayerPosition(Vector2 inputVector, Jump jumping, float delta)
     {
         //update vertical position
-        if (jumping == jump.FULL) velocity.y = (float)JUMPSTRENGTH;
-        else if (jumping == jump.REDUCED) velocity.y -= (float)(JUMPSTRENGTH/3);
+        if (jumping == Jump.FULL) velocity.y = (float)JUMPSTRENGTH;
+        else if (jumping == Jump.REDUCED) velocity.y -= (float)(JUMPSTRENGTH/3);
         velocity.y = velocity.MoveToward(baselineGravity, delta * GRAVITYSTRENGTH).y;
 
         //update horizontal position
@@ -73,9 +78,9 @@ public class Player : KinematicBody2D
         velocity = MoveAndSlide(velocity,Vector2.Up);
     }
 
-    private void updateAnimation(Vector2 inputVector, jump jumping, float delta)
+    private void updateAnimation(Vector2 inputVector, Jump jumping, float delta)
     {
-        if (jumping != jump.NONE)
+        if (jumping != Jump.NONE)
         {
 
         }

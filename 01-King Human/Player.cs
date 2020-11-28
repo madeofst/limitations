@@ -42,6 +42,9 @@ public class Player : KinematicBody2D
     public override void _Input(InputEvent @event)
     {
         jumping = detectJump(@event);
+        //update vertical position
+        if (jumping == Jump.FULL) velocity.y = (float)JUMPSTRENGTH;
+        else if (jumping == Jump.REDUCED) velocity.y -= (float)(JUMPSTRENGTH/3);
     }
 
     private Jump detectJump(InputEvent @event)
@@ -60,11 +63,7 @@ public class Player : KinematicBody2D
 
     private void updatePlayerPosition(Vector2 inputVector, Jump jumping, float delta)
     {
-        //update vertical position
-        if (jumping == Jump.FULL) velocity.y = (float)JUMPSTRENGTH;
-        else if (jumping == Jump.REDUCED) velocity.y -= (float)(JUMPSTRENGTH/3);
         velocity.y = velocity.MoveToward(baselineGravity, delta * GRAVITYSTRENGTH).y;
-
         //update horizontal position
         if(inputVector.x != 0)
         {

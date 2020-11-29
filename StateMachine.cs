@@ -3,7 +3,7 @@ using System;
 
 public class StateMachine : Node2D
 {
-    public enum State 
+    public enum States 
     {
         none,
         idle,
@@ -12,54 +12,43 @@ public class StateMachine : Node2D
         falling
     }
 
-    public State state;
-    public State previousState;
-    public Player parent;
-
-    public override void _Ready()
-    {
-        parent = GetParent<Player>();
-    }
+    public States state;
+    public States previousState;
 
     public override void _PhysicsProcess(float delta)
     {
-        if (state!=State.none)
+        if (state!=States.none)
         {
             stateLogic(delta);
-            State transition = getTransition(delta);
-            if (transition != State.none) setState(transition);
+            States transition = getTransition(delta);
+            if (transition != States.none) setState(transition);
+            //GD.Print(state);
         }
     }
 
-    public void setState(State newState)
+    public void setState(States newState)
     {
         previousState = state;
         state = newState;
-        if(previousState!=State.none) exitState(previousState,newState);
-        if(newState!=State.none) enterState(newState,previousState);
+        if(previousState!=States.none) exitState(previousState,newState);
+        if(newState!=States.none) enterState(newState,previousState);
     }
 
     public virtual void stateLogic(float delta)
     {
-        return;
     }
 
-    public virtual State getTransition(float delta)
+    public virtual States getTransition(float delta)
     {
         return state;
     }
 
-    public virtual void enterState(State newState, State oldState)
+    public virtual void enterState(States newState, States oldState)
     {
-        return;
     }
 
-    public virtual void exitState(State oldState, State newState)
+    public virtual void exitState(States oldState, States newState)
     {
-        return;
     }
-
-
-
 
 }

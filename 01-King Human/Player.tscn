@@ -94,5 +94,5 @@ anims/RunRight = SubResource( 4 )
 position = Vector2( 1.55795, 4.12955 )
 shape = SubResource( 5 )
 
-[node name="StateMachine" type="Node2D" parent="."]
+[node name="PlayerSM" type="Node2D" parent="."]
 script = ExtResource( 3 )

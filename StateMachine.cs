@@ -12,12 +12,13 @@ public class StateMachine : Node2D
         falling
     }
 
-    private State state;
-    private State previousState;
+    public State state;
+    public State previousState;
+    public Player parent;
 
     public override void _Ready()
     {
-        Node2D parent = GetParent<Node2D>();
+        parent = GetParent<Player>();
     }
 
     public override void _PhysicsProcess(float delta)
@@ -45,7 +46,7 @@ public class StateMachine : Node2D
 
     public virtual State getTransition(float delta)
     {
-        return State.none;
+        return state;
     }
 
     public virtual void enterState(State newState, State oldState)
@@ -57,6 +58,7 @@ public class StateMachine : Node2D
     {
         return;
     }
+
 
 
 

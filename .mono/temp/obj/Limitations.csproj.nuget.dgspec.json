@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "c:\\Users\\Mike\\dev\\csharp\\limitations\\Limitations.csproj": {}
+    "C:\\Users\\Mike\\dev\\csharp\\limitations\\Limitations.csproj": {}
   },
   "projects": {
-    "c:\\Users\\Mike\\dev\\csharp\\limitations\\Limitations.csproj": {
+    "C:\\Users\\Mike\\dev\\csharp\\limitations\\Limitations.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Users\\Mike\\dev\\csharp\\limitations\\Limitations.csproj",
+        "projectUniqueName": "C:\\Users\\Mike\\dev\\csharp\\limitations\\Limitations.csproj",
         "projectName": "Limitations",
-        "projectPath": "c:\\Users\\Mike\\dev\\csharp\\limitations\\Limitations.csproj",
+        "projectPath": "C:\\Users\\Mike\\dev\\csharp\\limitations\\Limitations.csproj",
         "packagesPath": "C:\\Users\\Mike\\.nuget\\packages\\",
-        "outputPath": "c:\\Users\\Mike\\dev\\csharp\\limitations\\.mono\\temp\\obj\\",
+        "outputPath": "C:\\Users\\Mike\\dev\\csharp\\limitations\\.mono\\temp\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Mike\\AppData\\Roaming\\NuGet\\NuGet.Config"

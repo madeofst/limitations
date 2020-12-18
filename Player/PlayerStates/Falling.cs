@@ -14,7 +14,7 @@ public class Falling : State
     
     public override State getReplacement()
     {
-        if (Parent.IsOnFloor())  //TODO: possible signal up
+        if (Parent.grounded)  //TODO: possible signal up
         {
             return new Idle(Parent);
         }

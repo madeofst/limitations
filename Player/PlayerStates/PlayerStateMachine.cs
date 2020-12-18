@@ -6,11 +6,15 @@ public class PlayerStateMachine : Node2D
 {
     private State currentState;
     private Player parent;
+    private World world;
+
+    public Player Parent { get => parent; set => parent = value; }
 
     public override void _Ready()
 	{
-        parent = GetParent<Player>();
-        CallDeferred("SetState", new Idle(parent));
+        Parent = GetParent<Player>();
+        world = GetNode<World>("/root/World");
+        CallDeferred("SetState", new Idle(Parent));
     }
 
     public void SetState(State newState)
@@ -40,15 +44,18 @@ public class PlayerStateMachine : Node2D
         {
             stateLogic(delta);
             ChangeState();
+            //GD.Print(currentState.Name);
         }
     }
 
     public virtual void stateLogic(float delta)
     {
-        parent.detectDirectionalInput(); //TODO: possible signal up
-		parent.applyGravity(delta); //TODO: possible signal up
-		parent.updatePlayerPosition(delta); //TODO: possible signal up
-        parent.setPlayerDirection();
+        Parent.detectDirectionalInput(); //TODO: possible signal up
+        Parent.checkAllCollisions();
+		Parent.applyGravity(delta); //TODO: possible signal up
+		Parent.updateHorizontalPlayerPosition(delta); //TODO: possible signal up
+        Parent.checkAllCollisions();
+        Parent.setPlayerDirection();
     }
 
     public override void _Input(InputEvent @event)
@@ -63,11 +70,11 @@ public class PlayerStateMachine : Node2D
     {
         if (currentState is Idle | currentState is Running)
         {
-            parent.velocity.y = (float)parent.JUMPSTRENGTH; //TODO: possible signal up
+            Parent.velocity.y = (float)Parent.JUMPSTRENGTH; //TODO: possible signal up
         }
         else if (currentState is Jumping)
         {
-            parent.velocity.y -= (float)(parent.JUMPSTRENGTH / 3); //TODO: possible signal up
+            Parent.velocity.y -= (float)(Parent.JUMPSTRENGTH / 3); //TODO: possible signal up
         }
     }
 }

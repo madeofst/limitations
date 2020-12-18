@@ -14,7 +14,7 @@ public class Idle : State
 
     public override State getReplacement()
     {
-        if(!Parent.IsOnFloor())
+        if(!Parent.grounded)
         {
             if(Parent.velocity.y <0) return new Jumping(Parent); //TODO: possible signal up
             else if (Parent.velocity.y > 0) return new Falling(Parent); //TODO: possible signal up

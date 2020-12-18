@@ -14,13 +14,14 @@ public class Running : State
 
     public override State getReplacement()
     {
-        if (!Parent.IsOnFloor())
+        //GD.Print(Parent.velocity.x);
+        if (!Parent.grounded)
         {
             if(Parent.velocity.y <0) return new Jumping(Parent); //TODO: possible signal up
             else if (Parent.velocity.y >= 0) return new Falling(Parent); //TODO: possible signal up
             else return this;
         }
-        else if (Parent.velocity.x < 0.01 && Parent.velocity.x > -0.01) //TODO: possible signal up
+        else if (Parent.velocity.x == 0) //TODO: possible signal up
         {
             return new Idle(Parent);
         }

@@ -3,93 +3,83 @@ using System;
 
 public class WorldStateMachine : Node2D
 {
-    private World parent;
+    private World world;
     private Player player;
-    private float GlobalGravity;
-    public float globalGravity
-    {
-        get
-        {
-            return (float)Physics2DServer.AreaGetParam(GetViewport().FindWorld2d().Space, Physics2DServer.AreaParameter.Gravity);
-        }
-        set
-        {
-            Physics2DServer.AreaSetParam(GetViewport().FindWorld2d().Space, Physics2DServer.AreaParameter.Gravity, value); //TODO:need to check on value provided
-        }
-    }
-
-    private float GlobalLinearDamping;
-    public float globalLinearDamping
-    {
-        get
-        {
-            return (float)Physics2DServer.AreaGetParam(GetViewport().FindWorld2d().Space, Physics2DServer.AreaParameter.LinearDamp);
-        }
-        set
-        {
-            Physics2DServer.AreaSetParam(GetViewport().FindWorld2d().Space, Physics2DServer.AreaParameter.LinearDamp, value); //TODO:need to check on value provided
-        }
-    }
-
-
-    public enum GravityState
-    {
-        ON,
-        OFF
-    }
-    private GravityState gravity = GravityState.OFF;
+    private WhiteBlock block;
     
     public override void _Ready()
     {
-        parent = GetParent<World>();
+        world = GetParent<World>();
         player = GetNode<Player>("../Player");
-        CallDeferred("ToggleGravity");
+        block = GetNode<WhiteBlock>("../WhiteBlock");
+        setGravityState(world.Gravity);
     }
 
     public override void _Input(InputEvent @event)
     {
         if (@event.IsActionPressed("ui_gravity"))
         {
-            ToggleGravity();
+            ToggleGravityState();
         }
 
         if (@event.IsActionPressed("ui_reset"))
         {
             PackedScene playerScene = (PackedScene)ResourceLoader.Load("res://Player/Player.tscn");
-            player.QueueFree();
-            Player newPlayer = (Player)playerScene.Instance();
-            parent.AddChild(newPlayer);
-            PlayerStateMachine sm = newPlayer.GetNode<PlayerStateMachine>("PlayerStateMachine");
-            sm.Parent = sm.GetParent<Player>();
+            world.RemoveChild(player);
+            player = (Player)playerScene.Instance();
+            world.AddChild(player);
+
+            PackedScene boxScene = (PackedScene)ResourceLoader.Load("res://Box/WhiteBlock.tscn");
+            world.RemoveChild(world.GetNode<RigidBody2D>("WhiteBlock"));
+            block = (WhiteBlock)boxScene.Instance();
+            world.AddChild(block);
+            block.Position = new Vector2(140,112);
+
+            setGravityState(world.Gravity);
         }
     }
 
-    private void ToggleGravity()
+    private void ToggleGravityState()
     {
-        Player player = GetNode<Player>("/root/World/Player");
-        if(gravity == GravityState.ON)
+        if(world.Gravity == World.GravityState.ON)
         {
-            gravity = GravityState.OFF;
-            globalGravity = 0;
-            globalLinearDamping = 0;
-
-            player.FRICTION = 0;
-            player.ACCELERATION = 0;
-            player.JUMPSTRENGTH = 0;
+            setGravityState(World.GravityState.OFF);
         }
         else
         {
-            gravity = GravityState.ON;
-            globalGravity = 1500;
-            globalLinearDamping = 0.1f;
-
-            player.FRICTION = 1500;
-            player.ACCELERATION = 1000;
-            player.JUMPSTRENGTH = -575;
-            
+            setGravityState(World.GravityState.ON);
         }
-        player.GRAVITYSTRENGTH = player.PlayerGravityMultiplier * (int)globalGravity;
-        //GD.Print($"Player GravityStrength = {player.GRAVITYSTRENGTH}");
     }
 
+    private void setGravityState(World.GravityState gravity)
+    {
+        world.Gravity = gravity;
+        if(world.Gravity == World.GravityState.ON)
+        {
+            world.globalGravityValue = 1500;
+            world.globalLinearDamping = 0.1f;
+
+            player.friction = 1500;
+            player.accleration = 1000;
+            player.jumpStrength = -475;
+
+            block.blockState = WhiteBlock.BlockState.falling;
+        }
+        else if (world.Gravity == World.GravityState.OFF)
+        {
+            world.globalGravityValue = 0;
+            world.globalLinearDamping = 0;
+
+            player.friction = 0;
+            player.accleration = 0;
+            player.jumpStrength = 0;
+
+            block.blockState = WhiteBlock.BlockState.floating;
+        }
+        else
+        {
+            throw new NotImplementedException();
+        }
+        player.gravityStrength = player.playerGravityMultiplier * (int)world.globalGravityValue;
+    }
 }

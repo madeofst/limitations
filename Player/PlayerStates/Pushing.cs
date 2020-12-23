@@ -2,11 +2,11 @@ using Godot;
 using Limitations;
 using System;
 
-public class Running : State
+public class Pushing : State
 {   
-    public Running()
+    public Pushing()
     {
-        Name = "Running";
+        Name = "Pushing";
     }
 
     public override void enterState()

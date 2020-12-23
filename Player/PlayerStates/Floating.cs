@@ -2,27 +2,28 @@ using Godot;
 using Limitations;
 using System;
 
-public class Jumping : State
+public class Floating : State
 {
-    public Jumping()
+    public Floating()
     {
-        Name = "Jumping";
+        Name = "Floating";
     }
 
     public override void enterState()
     {
         if (player.inputVector.x > 0)
         {
-            animationPlayer.Play("RunRight"); //FIXME: change to jump animation
+            animationPlayer.Play("IdleRight");  //FIXME: change to floating
         }
         else if (player.inputVector.x < 0)
         {
-            animationPlayer.Play("RunLeft"); //FIXME: change to jump animation
+            animationPlayer.Play("IdleLeft");  //FIXME: change to floating
         }
     }
 
     public override void exitState()
     {
     }
+
 
 }

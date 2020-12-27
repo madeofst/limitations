@@ -26,6 +26,30 @@ public class Idle : State
 
 	}
 
+    public override State getReplacement()
+    {
+        State state = base.getReplacement();
 
+        if (state == null)
+        {
+            if (player.grounded)
+            {
+                if (player.velocity.x != 0)
+                {
+                    state = running;
+                }
+                else
+                {
+                    state = idle;
+                }
+            }
+            else
+            {
+				state = falling;
+            }
+        }
+
+        return state;
+    }
 
 }

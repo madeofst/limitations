@@ -25,4 +25,23 @@ public class Jumping : State
     {
     }
 
+    public override State getReplacement()
+    {
+        State state = base.getReplacement();
+
+        if (state == null)
+        {
+            if (player.velocity.y < 0) 
+            {
+                return jumping;
+            }
+            else
+            {
+                return falling;
+            }
+        }
+
+        return state;
+    }
+
 }

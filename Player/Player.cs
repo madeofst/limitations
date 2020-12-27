@@ -4,43 +4,34 @@ using System;
 
 public class Player : KinematicBody2D
 {
-	public int friction;
-	public int gravityStrength;
-	public int accleration;
-	public int maxSpeed = 225;
-	public int terminalVelocity = 500; 
-	public int jumpStrength; //TODO: Look at using properties for these
-	public int inertia = 300;
-	public float drag = 0.5f;
-	public int playerGravityMultiplier { get; internal set; }  = 1;
+	public int friction { get; set; }
+	public int gravityStrength { get; set; }
+	public int accleration { get; set; }
+	public int maxSpeed { get; set; } = 225;
+	public int terminalVelocity { get; set; } = 500; 
+	public int jumpStrength { get; set; } //TODO: Look at using properties for these
+	public int inertia { get; set; } = 300;
+	public float drag { get; set; } = 0.5f;
+	public int playerGravityMultiplier { get; set; } = 1;
 
-	public Vector2 inputVector; 
-	public Vector2 playerDirection;
-	public Vector2 velocity;
+	public Vector2 inputVector = new Vector2(Vector2.Zero);
+	public Vector2 playerDirection = new Vector2(Vector2.Right);
+	public Vector2 velocity = new Vector2(0, 50);
 	
 	public World world { get; private set; }
-	//public AnimationPlayer animationPlayer { get; private set; }
-
 	private RayCast2D directionalRay;
-	private RigidBody2D rigidBody;
 
-	public bool onFloor { get; private set; }
-	public bool onLeftWall { get; private set; }
-	public bool onRightWall { get; private set; }
-	public bool onCeiling { get; private set; }
-	public bool onObject { get; private set; }
-	public bool grounded { get; private set; }
+	public bool onFloor { get; set; }
+	public bool onLeftWall { get; set; }
+	public bool onRightWall { get; set; }
+	public bool onCeiling { get; set; }
+	public bool onObject { get; set; }
+	public bool grounded { get; set; }
 
 	public override void _Ready()
 	{ 
 		world = GetNode<World>("/root/World");
 		directionalRay = GetNode<RayCast2D>("RayCastVertical/RayCast2D");
-
-		inputVector = new Vector2(Vector2.Zero);
-		playerDirection = new Vector2(Vector2.Right);
-		velocity = new Vector2(0,terminalVelocity);
-
-		//printParameters();
 	}
 
 	public void detectDirectionalInput()
@@ -51,56 +42,29 @@ public class Player : KinematicBody2D
 
 	public void CheckSurfaceCollisions()
 	{
+		resetSurfaceCollisions();
+		Node2D rayCasts = GetNode<Node2D>("RayCasts");
+		for (int i=0; i<=rayCasts.GetChildCount()-1; i++)
+		{
+			RayCasts ray = rayCasts.GetChild<RayCasts>(i);
+			ray.checkCollisions();
+		}
+		//printInteractionStatus();
+	}
+
+    private void resetSurfaceCollisions()
+    {	
 		grounded = false;
 		onObject = false;
 		onFloor = false;
 		onLeftWall = false;
 		onRightWall = false;
-		onCeiling = false;
-		
-		Node2D rayCasts = GetNode<Node2D>("RayCasts");
-		for (int i=0; i<=rayCasts.GetChildCount()-1; i++)
-		{
-			RayCast2D ray = rayCasts.GetChild<RayCast2D>(i);
-			if (ray.IsColliding() && (ray.GetCollider() is TileMap))
-			{
-				if (Vector2.Down == ray.CastTo.Normalized())
-				{
-					onFloor = true;
-					grounded = true;
-				}
-				else if (Vector2.Left == ray.CastTo.Normalized())
-				{
-					onLeftWall = true;
-				}
-				else if (Vector2.Right == ray.CastTo.Normalized())
-				{
-					onRightWall = true;
-				}
-				else if (Vector2.Up == ray.CastTo.Normalized())
-				{
-					onCeiling = true;
-				}
-				else
-				{
-					throw new NotImplementedException();
-				}
-			}
-			else if (ray.IsColliding() && (ray.GetCollider() is RigidBody2D))
-			{
-				if (Vector2.Down == ray.CastTo.Normalized())
-				{
-					onObject = true;
-					grounded = true;
-				}
-			}
-		}
-		//printInteractionStatus();
-	}
+ 		onCeiling = false;
+    }
 
-	public void applyGravity(float delta)
+    public void applyGravity(float delta)
 	{
-		if (!grounded) 
+		if (!grounded)
 		{
 			velocity.y += delta * gravityStrength;
 		}
@@ -108,30 +72,27 @@ public class Player : KinematicBody2D
 
 	public void updateHorizontalPlayerPosition(float delta)
 	{
-		Vector2 horizontalVelocity = new Vector2(velocity.x, 0);
-		if (inputVector.x != 0)
+		if (world.Gravity == World.GravityState.ON)
 		{
-			velocity.x = horizontalVelocity.MoveToward(inputVector * maxSpeed, delta * accleration).x;
-		}
-		else if (grounded)
-		{
-			velocity.x = horizontalVelocity.MoveToward(Vector2.Zero, friction * delta).x;
-		}
-		else
-		{
-			if (world.Gravity == World.GravityState.ON)
+			Vector2 horizontalVelocity = new Vector2(velocity.x, 0);
+			if (inputVector.x != 0)
+			{
+				velocity.x = horizontalVelocity.MoveToward(inputVector * maxSpeed, delta * accleration).x;
+			}
+			else if (grounded)
+			{
+				velocity.x = horizontalVelocity.MoveToward(Vector2.Zero, friction * delta).x;
+			}
+			else
 			{
 				velocity.x = horizontalVelocity.MoveToward(Vector2.Zero, drag * velocity.x * delta).x;
 			}
-		}
 
-		if (world.Gravity == World.GravityState.ON)
-		{
-			if (onLeftWall && velocity.x < 0)
-			{
+			if (onLeftWall && inputVector.x == 0 && velocity.x < 0)
+			{ 
 				velocity.x = 0;
 			}
-			else if (onRightWall && velocity.x > 0)
+			else if (onRightWall && inputVector.x == 0 && velocity.x > 0)
 			{
 				velocity.x = 0;
 			}
@@ -139,19 +100,30 @@ public class Player : KinematicBody2D
 
 		KinematicCollision2D collision = MoveAndCollide(velocity * delta, false, true, false);
 
+		//CheckSurfaceCollisions();
+
 		if (collision != null)
 		{
-			if (collision.Collider.IsClass("RigidBody2D") && grounded)
-			{
-				rigidBody = collision.Collider as RigidBody2D;
-				rigidBody.ApplyCentralImpulse(-collision.Normal * inertia);
-			}
-			
 			if (world.Gravity == World.GravityState.ON)
 			{
-				velocity = velocity.Slide(collision.Normal);
+				if (collision.Collider is RigidBody2D && grounded)
+				{
+					PlayerStateMachine statemachine = GetNode<PlayerStateMachine>("PlayerStateMachine");
+					if (statemachine.currentState != statemachine.currentState.pushing) 
+					{
+						statemachine.SetState(statemachine.GetNode<State>("State/Pushing"));
+					}
+
+					RigidBody2D rigidBody = collision.Collider as RigidBody2D;
+					rigidBody.ApplyCentralImpulse(-collision.Normal * inertia);
+					velocity = collision.Remainder.Slide(Vector2.Up);
+				}
+				else
+				{
+					velocity = velocity.Slide(collision.Normal);
+				}
 			}
-			else if (world.Gravity == World.GravityState.OFF)
+			else
 			{
 				var reflect = collision.Remainder.Bounce(collision.Normal);
 				velocity = velocity.Bounce(collision.Normal);

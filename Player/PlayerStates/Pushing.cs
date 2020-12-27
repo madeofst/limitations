@@ -25,4 +25,30 @@ public class Pushing : State
     {
     }
 
+    public override State getReplacement()
+    {
+        State state = base.getReplacement();
+
+        if (state == null)
+        {
+            if (player.velocity.x != 0)
+            {
+                if (player.onLeftWall || player.onRightWall)
+                {
+                    state = pushing;
+                }
+                else
+                {
+                    state = running;
+                }
+            }
+            else
+            {
+                state = idle;
+            }
+        }
+
+        return state;
+    }
+
 }

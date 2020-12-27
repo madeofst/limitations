@@ -25,5 +25,16 @@ public class Floating : State
     {
     }
 
+    public override State getReplacement()
+    {
+        State state = base.getReplacement();
+
+        if (state == null)
+        {
+            state = falling;
+        }
+
+        return state;
+    }
 
 }

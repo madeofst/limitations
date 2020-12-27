@@ -10,12 +10,12 @@ namespace Limitations
 		public Player player { get; set; }
 		public World world { get; set; }
 
-		private State falling;
-		private State floating;
-		private State idle;
-		private State jumping;
-		private State running;
-		private State pushing;
+		public State falling { get; set; }
+		public State floating { get; set; }
+		public State idle { get; set; }
+		public State jumping { get; set; }
+		public State running { get; set; }
+		public State pushing { get; set; }
 				
 		public override void _Ready()
 		{
@@ -35,43 +35,15 @@ namespace Limitations
 		{ 
 		}
 
-		public State getReplacement()
+		public virtual State getReplacement()
 		{
-			if (world.Gravity == World.GravityState.ON)
+			if (world.Gravity == World.GravityState.OFF)
 			{
-				if (player.grounded)
-				{
-					if (player.velocity.x == 0)
-					{
-						return idle;
-					}
-					else
-					{
-						return running;
-					}
-				}
-				else 
-				{
-					if (player.velocity.y < 0) 
-					{
-						return jumping;
-					}
-					else
-					{
-						return falling;
-					}
-				}
+				return floating;
 			}
 			else
 			{
-				if (player.grounded)
-				{
-					return floating; //TODO: check for grabbing here
-				}
-				else
-				{
-					return floating;
-				}
+				return null;
 			}
 		}
 

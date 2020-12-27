@@ -1,17 +1,19 @@
-[gd_scene load_steps=19 format=2]
+[gd_scene load_steps=21 format=2]
 
-[ext_resource path="res://Player/PlayerStates/Falling.cs" type="Script" id=1]
+[ext_resource path="res://Player/PlayerStates/PlayerStateMachine.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Player/Player.cs" type="Script" id=2]
 [ext_resource path="res://Player/Animations/KingAll.png" type="Texture" id=3]
-[ext_resource path="res://Arrow64.png" type="Texture" id=4]
-[ext_resource path="res://Player/RayCastSprite.cs" type="Script" id=5]
-[ext_resource path="res://Player/PlayerStates/State.cs" type="Script" id=6]
-[ext_resource path="res://Player/PlayerStates/Jumping.cs" type="Script" id=7]
-[ext_resource path="res://Player/PlayerStates/Idle.cs" type="Script" id=8]
-[ext_resource path="res://Player/PlayerStates/PlayerStateMachine.cs" type="Script" id=9]
-[ext_resource path="res://Player/PlayerStates/Floating.cs" type="Script" id=10]
-[ext_resource path="res://Player/PlayerStates/Running.cs" type="Script" id=11]
-[ext_resource path="res://Player/PlayerStates/Pushing.cs" type="Script" id=12]
+[ext_resource path="res://Arrows/Arrow64.png" type="Texture" id=4]
+[ext_resource path="res://Player/RayCasts/RayCastSprite.cs" type="Script" id=5]
+[ext_resource path="res://Player/RayCasts/Ray_Ground1.cs" type="Script" id=6]
+[ext_resource path="res://Player/RayCasts/Ray_Ground2.cs" type="Script" id=7]
+[ext_resource path="res://Player/RayCasts/Ray_Right1.cs" type="Script" id=8]
+[ext_resource path="res://Player/RayCasts/Ray_Ceiling2.cs" type="Script" id=9]
+[ext_resource path="res://Player/RayCasts/Ray_Right2.cs" type="Script" id=10]
+[ext_resource path="res://Player/RayCasts/Ray_Left1.cs" type="Script" id=11]
+[ext_resource path="res://Player/RayCasts/Ray_Left2.cs" type="Script" id=12]
+[ext_resource path="res://Player/RayCasts/RayCasts.cs" type="Script" id=13]
+[ext_resource path="res://Player/RayCasts/Ray_Ceiling1.cs" type="Script" id=14]
 
 [sub_resource type="Animation" id=1]
 resource_name = "IdleLeft"
@@ -104,45 +106,22 @@ anims/IdleRight = SubResource( 2 )
 anims/RunLeft = SubResource( 3 )
 anims/RunRight = SubResource( 4 )
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="CollisionShape1" type="CollisionShape2D" parent="."]
 position = Vector2( -1, 13 )
 rotation = 1.5708
 shape = SubResource( 5 )
 
-[node name="CollisionShape2D2" type="CollisionShape2D" parent="."]
+[node name="CollisionShape2" type="CollisionShape2D" parent="."]
 position = Vector2( -1, -3 )
 rotation = 1.5708
 shape = SubResource( 5 )
 
-[node name="CollisionShape2D3" type="CollisionShape2D" parent="."]
+[node name="CollisionShape3" type="CollisionShape2D" parent="."]
 position = Vector2( -1, 5 )
 rotation = 1.5708
 shape = SubResource( 6 )
 
-[node name="PlayerStateMachine" type="Node2D" parent="."]
-position = Vector2( 113, -28 )
-script = ExtResource( 9 )
-
-[node name="State" type="Node2D" parent="PlayerStateMachine"]
-script = ExtResource( 6 )
-
-[node name="Falling" type="Node2D" parent="PlayerStateMachine/State"]
-script = ExtResource( 1 )
-
-[node name="Floating" type="Node2D" parent="PlayerStateMachine/State"]
-script = ExtResource( 10 )
-
-[node name="Idle" type="Node2D" parent="PlayerStateMachine/State"]
-script = ExtResource( 8 )
-
-[node name="Jumping" type="Node2D" parent="PlayerStateMachine/State"]
-script = ExtResource( 7 )
-
-[node name="Pushing" type="Node2D" parent="PlayerStateMachine/State"]
-script = ExtResource( 12 )
-
-[node name="Running" type="Node2D" parent="PlayerStateMachine/State"]
-script = ExtResource( 11 )
+[node name="PlayerStateMachine" parent="." instance=ExtResource( 1 )]
 
 [node name="RayCastVertical" type="YSort" parent="."]
 
@@ -150,57 +129,79 @@ script = ExtResource( 11 )
 rotation = -1.5708
 
 [node name="RayCastSprite" type="Sprite" parent="RayCastVertical"]
-visible = false
 texture = ExtResource( 4 )
 flip_v = true
 script = ExtResource( 5 )
 
-[node name="RayCasts" type="Node2D" parent="."]
+[node name="RayCasts2" type="Node2D" parent="."]
+
+[node name="Camera2D" type="Camera2D" parent="."]
+current = true
+limit_left = -56
+limit_top = 0
+limit_right = 1288
+limit_bottom = 544
+limit_smoothed = true
+drag_margin_h_enabled = true
+drag_margin_v_enabled = true
+editor_draw_limits = true
+editor_draw_drag_margin = true
+
+[node name="RayCasts" type="RayCast2D" parent="."]
+script = ExtResource( 13 )
 
 [node name="Ray_Ground1" type="RayCast2D" parent="RayCasts"]
 position = Vector2( -8, 15 )
 enabled = true
 cast_to = Vector2( 0, 10 )
 collision_mask = 2147483661
+script = ExtResource( 6 )
 
 [node name="Ray_Ground2" type="RayCast2D" parent="RayCasts"]
 position = Vector2( 6, 15 )
 enabled = true
 cast_to = Vector2( 0, 10 )
 collision_mask = 13
+script = ExtResource( 7 )
 
 [node name="Ray_Ceiling1" type="RayCast2D" parent="RayCasts"]
-position = Vector2( -8, -7 )
+position = Vector2( -8, -4 )
 enabled = true
 cast_to = Vector2( 0, -5 )
 collision_mask = 2147483661
+script = ExtResource( 14 )
 
 [node name="Ray_Ceiling2" type="RayCast2D" parent="RayCasts"]
-position = Vector2( 6, -7 )
+position = Vector2( 6, -4 )
 enabled = true
 cast_to = Vector2( 0, -5 )
 collision_mask = 13
+script = ExtResource( 9 )
 
 [node name="Ray_Right1" type="RayCast2D" parent="RayCasts"]
-position = Vector2( 6, -7 )
+position = Vector2( 6, -2 )
 enabled = true
-cast_to = Vector2( 2, 0 )
+cast_to = Vector2( 3, 0 )
 collision_mask = 2147483661
+script = ExtResource( 8 )
 
 [node name="Ray_Right2" type="RayCast2D" parent="RayCasts"]
-position = Vector2( 6, 15 )
+position = Vector2( 6, 13 )
 enabled = true
-cast_to = Vector2( 2, 0 )
+cast_to = Vector2( 3, 0 )
 collision_mask = 13
+script = ExtResource( 10 )
 
 [node name="Ray_Left1" type="RayCast2D" parent="RayCasts"]
-position = Vector2( -8, -7 )
+position = Vector2( -8, -2 )
 enabled = true
-cast_to = Vector2( -2, 0 )
+cast_to = Vector2( -3, 0 )
 collision_mask = 2147483661
+script = ExtResource( 11 )
 
 [node name="Ray_Left2" type="RayCast2D" parent="RayCasts"]
-position = Vector2( -8, 15 )
+position = Vector2( -8, 13 )
 enabled = true
-cast_to = Vector2( -2, 0 )
+cast_to = Vector2( -3, 0 )
 collision_mask = 13
+script = ExtResource( 12 )

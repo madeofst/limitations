@@ -6,7 +6,7 @@ public class PlayerStateMachine : Node2D
 {
 	public Player _player { get; set; }
 	public World _world { get; set; }
-	private State currentState;
+	public State currentState { get; set; }
 
 	public override void _Ready()
 	{
@@ -21,7 +21,11 @@ public class PlayerStateMachine : Node2D
 		previousState = currentState;
 		currentState = newState;
 		if (previousState!=null) previousState.exitState();      //TODO: This needs additional checks
-		if (newState!=null) currentState.enterState();
+		if (newState!=null) 
+		{
+			GD.Print(currentState.Name);
+			currentState.enterState();
+		}
 	}
 
 	public void ChangeState()
@@ -29,11 +33,12 @@ public class PlayerStateMachine : Node2D
 		State newState;
 		newState = currentState.getReplacement();
 		if (currentState != null && newState != null)
-		{
+		{		
+			if (newState != currentState) GD.Print(newState.Name);
 			currentState.exitState();
 			newState.enterState();
 			currentState = newState;
-		}
+		}	
 	}
  
 	public override void _PhysicsProcess(float delta)
@@ -53,25 +58,26 @@ public class PlayerStateMachine : Node2D
 		_player.applyGravity(delta);
 		_player.updateHorizontalPlayerPosition(delta);
 		_player.setPlayerDirection();
+		_player.CheckSurfaceCollisions();
 	}
 
 	public override void _Input(InputEvent @event)
 	{
 		if (@event.IsActionPressed("ui_jump"))
 		{
-			Jump(@event);
+			if (currentState is Idle | currentState is Running)
+			{
+				SetState(GetNode<State>("State/Jumping"));
+				_player.velocity.y = (float)_player.jumpStrength; //TODO: possible signal up
+			}
 		}
-	}
-
-	private void Jump(InputEvent @event)
-	{
-		if (currentState is Idle | currentState is Running)
-		{
-			_player.velocity.y = (float)_player.jumpStrength; //TODO: possible signal up
-		}
-		else if (currentState is Jumping)
-		{
-			_player.velocity.y -= (float)(_player.jumpStrength / 3); //TODO: possible signal up
+		
+		if (@event.IsActionReleased("ui_jump"))
+		{	
+			if (currentState is Jumping)
+			{
+				_player.velocity.y -= (float)(_player.jumpStrength / 3); //TODO: possible signal up
+			}
 		}
 	}
 }

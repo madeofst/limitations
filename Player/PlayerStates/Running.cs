@@ -25,4 +25,30 @@ public class Running : State
     {
     }
 
+    public override State getReplacement()
+    {
+        State state = base.getReplacement();
+
+        if (state == null)
+        {
+            if (player.grounded)
+            {
+                if (player.velocity.x == 0)
+                {
+                    state = idle;
+                }
+                else
+                {
+                    state = running;
+                }
+            }
+            else
+            {
+                state = falling;
+            }
+        }
+
+        return state;
+    }
+
 }

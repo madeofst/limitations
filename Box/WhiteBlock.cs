@@ -3,7 +3,6 @@ using System;
 
 public class WhiteBlock : RigidBody2D
 {
-
     public enum BlockState
     {
         falling,
@@ -27,9 +26,15 @@ public class WhiteBlock : RigidBody2D
     private Vector2 prevPosition;
     private Vector2 prevprevPosition;
 
+    public override void _IntegrateForces(Physics2DDirectBodyState state)
+    {
+    }
 
     public override void _PhysicsProcess(float delta)
     {
+        //GD.Print(AppliedForce.Abs().x);
+
+
         ray.Rotation = -Rotation;
         
         if (!ray.IsColliding() && blockState == BlockState.grounded)
@@ -37,8 +42,6 @@ public class WhiteBlock : RigidBody2D
             blockState = BlockState.falling;
         }
 
-        //if (Position <= prevPosition + new Vector2(0.01f, 0.01f) &&
-        //    Position >= prevPosition - new Vector2(0.01f, 0.01f))
         if (Position == prevPosition)
         {
             if (prevprevPosition != prevPosition) 

@@ -10,7 +10,7 @@ public class Player : KinematicBody2D
 	public int maxSpeed { get; set; } = 225;
 	public int terminalVelocity { get; set; } = 500; 
 	public int jumpStrength { get; set; } //TODO: Look at using properties for these
-	public int inertia { get; set; } = 300;
+	public int inertia { get; set; } = 130;
 	public float drag { get; set; } = 0.5f;
 	public int playerGravityMultiplier { get; set; } = 1;
 
@@ -20,47 +20,60 @@ public class Player : KinematicBody2D
 	
 	public World world { get; private set; }
 	private RayCast2D directionalRay;
+	private RichTextLabel label;
 
-	public bool onFloor { get; set; }
+	public bool grounded { get; set; }
+
 	public bool onLeftWall { get; set; }
 	public bool onRightWall { get; set; }
+
+	public bool onFloor { get; set; }
+	public bool wallInFront { get; set; }
 	public bool onCeiling { get; set; }
+
 	public bool onObject { get; set; }
-	public bool grounded { get; set; }
+	public bool objectInFront { get; set; }
+
 
 	public override void _Ready()
 	{ 
 		world = GetNode<World>("/root/World");
 		directionalRay = GetNode<RayCast2D>("RayCastVertical/RayCast2D");
+		label = GetNode<RichTextLabel>("RichTextLabel");
 	}
 
 	public void detectDirectionalInput()
 	{
 		inputVector.y = Input.GetActionStrength("ui_down") - Input.GetActionStrength("ui_up");
-		inputVector.x = Input.GetActionStrength("ui_right") - Input.GetActionStrength("ui_left"); 
+		inputVector.x = Input.GetActionStrength("ui_right") - Input.GetActionStrength("ui_left");
+		//inputVector.x = -1; 
 	}
 
-	public void CheckSurfaceCollisions()
+    private void resetSurfaceIndicators()
+    {	
+		grounded = false;
+
+		onLeftWall = false;
+		onRightWall = false;
+
+		onFloor = false;
+		wallInFront = false;
+		onCeiling = false;
+		
+		onObject = false;
+		objectInFront = false;
+    }
+
+	public void CheckCollisionsAndUpdateSurfaceIndicators()
 	{
-		resetSurfaceCollisions();
+		resetSurfaceIndicators();
 		Node2D rayCasts = GetNode<Node2D>("RayCasts");
 		for (int i=0; i<=rayCasts.GetChildCount()-1; i++)
 		{
 			RayCasts ray = rayCasts.GetChild<RayCasts>(i);
 			ray.checkCollisions();
 		}
-		//printInteractionStatus();
 	}
-
-    private void resetSurfaceCollisions()
-    {	
-		grounded = false;
-		onObject = false;
-		onFloor = false;
-		onLeftWall = false;
-		onRightWall = false;
- 		onCeiling = false;
-    }
 
     public void applyGravity(float delta)
 	{
@@ -70,11 +83,12 @@ public class Player : KinematicBody2D
 		}
 	}
 
-	public void updateHorizontalPlayerPosition(float delta)
+	public void updatePlayerPositionAndCollide(float delta)
 	{
 		if (world.Gravity == World.GravityState.ON)
 		{
 			Vector2 horizontalVelocity = new Vector2(velocity.x, 0);
+
 			if (inputVector.x != 0)
 			{
 				velocity.x = horizontalVelocity.MoveToward(inputVector * maxSpeed, delta * accleration).x;
@@ -88,42 +102,52 @@ public class Player : KinematicBody2D
 				velocity.x = horizontalVelocity.MoveToward(Vector2.Zero, drag * velocity.x * delta).x;
 			}
 
-			if (onLeftWall && inputVector.x == 0 && velocity.x < 0)
-			{ 
-				velocity.x = 0;
-			}
-			else if (onRightWall && inputVector.x == 0 && velocity.x > 0)
+			if (wallInFront)
 			{
 				velocity.x = 0;
 			}
+
 		}
+
+		label.Text = $"{wallInFront}";
 
 		KinematicCollision2D collision = MoveAndCollide(velocity * delta, false, true, false);
 
-		//CheckSurfaceCollisions();
-
 		if (collision != null)
 		{
-			if (world.Gravity == World.GravityState.ON)
+			if (collision.Collider is RigidBody2D)
 			{
-				if (collision.Collider is RigidBody2D && grounded)
+				WhiteBlock rigidBody = collision.Collider as WhiteBlock;
+
+				if (rigidBody.AppliedForce.Abs() == Vector2.Zero ||
+					rigidBody.AppliedForce.Abs() < (inertia * rigidBody.AppliedForce.Normalized()))
+				{
+					rigidBody.ApplyCentralImpulse((velocity/maxSpeed) * (inertia));
+				}
+
+				if (onFloor && world.Gravity == World.GravityState.ON)
 				{
 					PlayerStateMachine statemachine = GetNode<PlayerStateMachine>("PlayerStateMachine");
-					if (statemachine.currentState != statemachine.currentState.pushing) 
+					if (statemachine.currentState != statemachine.currentState.pushing && velocity.x != 0) 
 					{
 						statemachine.SetState(statemachine.GetNode<State>("State/Pushing"));
 					}
-
-					RigidBody2D rigidBody = collision.Collider as RigidBody2D;
-					rigidBody.ApplyCentralImpulse(-collision.Normal * inertia);
-					velocity = collision.Remainder.Slide(Vector2.Up);
 				}
-				else
+				else if (onObject)
 				{
 					velocity = velocity.Slide(collision.Normal);
 				}
 			}
 			else
+			{
+				if (world.Gravity == World.GravityState.ON)
+				{
+					velocity = velocity.Slide(collision.Normal);
+
+				}
+			}
+
+			if (world.Gravity == World.GravityState.OFF)				
 			{
 				var reflect = collision.Remainder.Bounce(collision.Normal);
 				velocity = velocity.Bounce(collision.Normal);
@@ -133,26 +157,28 @@ public class Player : KinematicBody2D
 	}   
 
 	public void setPlayerDirection()
-	 {
-		if (velocity == Vector2.Zero)
+	{
+		Vector2 dir;
+		if (velocity.x != 0)
 		{
-			if (inputVector.y != 0)
-			{
-				playerDirection.y = inputVector.y;
-			}
-			else
-			{
-				playerDirection.y = 0;
-			}
-
-			if (inputVector.x != 0)
-			{
-				playerDirection.x = inputVector.x;
-			}
+			dir = velocity.Normalized();
+		}
+		else if (inputVector.x != 0)
+		{
+			dir = inputVector.Normalized();
 		}
 		else
 		{
-			playerDirection = velocity;
+			dir = playerDirection.Normalized();
+		}
+		
+		if (dir.Dot(Vector2.Right) > 0)
+		{
+			playerDirection = new Vector2(Vector2.Right);
+		}
+		else
+		{
+			playerDirection = new Vector2(Vector2.Left);
 		}
 		directionalRay.Rotation = Mathf.Atan2(playerDirection.y, playerDirection.x);
 	}

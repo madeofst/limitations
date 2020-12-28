@@ -11,11 +11,13 @@ height = 0.0
 [sub_resource type="CircleShape2D" id=2]
 radius = 8.0
 
-[node name="WhiteBlock" type="RigidBody2D"]
+[node name="WhiteBlock" type="RigidBody2D" groups=[
+"Objects",
+]]
 collision_layer = 8
 collision_mask = 30
 mode = 2
-mass = 2.0
+mass = 4.0
 physics_material_override = ExtResource( 3 )
 script = ExtResource( 2 )
 

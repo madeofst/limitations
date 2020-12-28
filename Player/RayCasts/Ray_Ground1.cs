@@ -7,13 +7,13 @@ public class Ray_Ground1 : RayCasts
     {
         if (isCollidingWithTileMap())
         {
-            player.grounded = true;
             player.onFloor = true;
         }
         else if (isCollidingWithRigidBody())
         {
-            player.grounded = true;
             player.onObject = true;
         }
+
+        if (player.onFloor || player.onObject) player.grounded = true;
     }
 }

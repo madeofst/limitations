@@ -133,8 +133,6 @@ texture = ExtResource( 4 )
 flip_v = true
 script = ExtResource( 5 )
 
-[node name="RayCasts2" type="Node2D" parent="."]
-
 [node name="Camera2D" type="Camera2D" parent="."]
 current = true
 limit_left = -56
@@ -181,27 +179,38 @@ script = ExtResource( 9 )
 [node name="Ray_Right1" type="RayCast2D" parent="RayCasts"]
 position = Vector2( 6, -2 )
 enabled = true
-cast_to = Vector2( 3, 0 )
+cast_to = Vector2( 8, 0 )
 collision_mask = 2147483661
 script = ExtResource( 8 )
 
 [node name="Ray_Right2" type="RayCast2D" parent="RayCasts"]
 position = Vector2( 6, 13 )
 enabled = true
-cast_to = Vector2( 3, 0 )
+cast_to = Vector2( 8, 0 )
 collision_mask = 13
 script = ExtResource( 10 )
 
 [node name="Ray_Left1" type="RayCast2D" parent="RayCasts"]
 position = Vector2( -8, -2 )
 enabled = true
-cast_to = Vector2( -3, 0 )
+cast_to = Vector2( -8, 0 )
 collision_mask = 2147483661
 script = ExtResource( 11 )
 
 [node name="Ray_Left2" type="RayCast2D" parent="RayCasts"]
 position = Vector2( -8, 13 )
 enabled = true
-cast_to = Vector2( -3, 0 )
+cast_to = Vector2( -8, 0 )
 collision_mask = 13
 script = ExtResource( 12 )
+
+[node name="RichTextLabel" type="RichTextLabel" parent="."]
+margin_left = -38.0
+margin_top = -27.0
+margin_right = 109.0
+margin_bottom = -11.0
+text = "Text"
+scroll_active = false
+__meta__ = {
+"_edit_use_anchors_": false
+}

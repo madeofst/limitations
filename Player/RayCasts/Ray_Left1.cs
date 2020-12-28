@@ -5,9 +5,17 @@ public class Ray_Left1 : RayCasts
 {
     public override void checkCollisions()
     {
-        if (isCollidingWithTileMap() || isCollidingWithRigidBody())
+        if (player.playerDirection.Normalized().Dot(CastTo.Normalized()) == 1)
         {
-            player.onLeftWall = true;
+            if (isCollidingWithTileMap())
+            {
+                //player.onRightWall = true;
+                player.wallInFront = true;
+            }
+            else if (isCollidingWithRigidBody())
+            {
+                player.objectInFront = true;
+            }
         }
     }
 }

@@ -33,7 +33,7 @@ public class Pushing : State
         {
             if (player.velocity.x != 0)
             {
-                if (player.onLeftWall || player.onRightWall)
+                if (player.objectInFront)
                 {
                     state = pushing;
                 }

@@ -54,18 +54,17 @@ public class PlayerStateMachine : Node2D
 	{
 		//TODO: look at signals here
 		_player.detectDirectionalInput();
-		_player.CheckSurfaceCollisions();
 		_player.applyGravity(delta);
-		_player.updateHorizontalPlayerPosition(delta);
+		_player.updatePlayerPositionAndCollide(delta);
 		_player.setPlayerDirection();
-		_player.CheckSurfaceCollisions();
+		_player.CheckCollisionsAndUpdateSurfaceIndicators();
 	}
 
 	public override void _Input(InputEvent @event)
 	{
 		if (@event.IsActionPressed("ui_jump"))
 		{
-			if (currentState is Idle | currentState is Running)
+			if (currentState is Idle | currentState is Running | currentState is Pushing)
 			{
 				SetState(GetNode<State>("State/Jumping"));
 				_player.velocity.y = (float)_player.jumpStrength; //TODO: possible signal up

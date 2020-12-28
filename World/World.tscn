@@ -507,5 +507,13 @@ tile_data = PoolIntArray( -2, 0, 0, -1, 0, 2, -65523, 0, 0, -65522, 0, 1, -65521
 
 [node name="Player" parent="." instance=ExtResource( 4 )]
 
-[node name="WhiteBlock" parent="." instance=ExtResource( 3 )]
+[node name="Objects" type="Node2D" parent="."]
+
+[node name="WhiteBlock" parent="Objects" instance=ExtResource( 3 )]
 position = Vector2( 205, 152 )
+
+[node name="WhiteBlock2" parent="Objects" instance=ExtResource( 3 )]
+position = Vector2( 170, 152 )
+
+[node name="WhiteBlock3" parent="Objects" instance=ExtResource( 3 )]
+position = Vector2( 188, 152 )

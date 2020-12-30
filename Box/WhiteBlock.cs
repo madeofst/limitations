@@ -10,7 +10,7 @@ public class WhiteBlock : RigidBody2D
         floating
     }
 
-    public BlockState blockState { get; set; } = BlockState.grounded;
+    public BlockState blockState { get; set; } = BlockState.falling;
 
     private World world { get; set; }
     private RayCast2D ray { get; set; }
@@ -32,9 +32,6 @@ public class WhiteBlock : RigidBody2D
 
     public override void _PhysicsProcess(float delta)
     {
-        //GD.Print(AppliedForce.Abs().x);
-
-
         ray.Rotation = -Rotation;
         
         if (!ray.IsColliding() && blockState == BlockState.grounded)
@@ -42,7 +39,7 @@ public class WhiteBlock : RigidBody2D
             blockState = BlockState.falling;
         }
 
-        if (Position == prevPosition)
+        if (ray.GetCollider() is TileMap && Position == prevPosition)
         {
             if (prevprevPosition != prevPosition) 
             {
@@ -57,23 +54,18 @@ public class WhiteBlock : RigidBody2D
 
         prevPosition = Position;
 
-        //GD.Print(blockState);
-
         if (blockState == BlockState.falling)
         {
-            //Mass = 100;
             PhysicsMaterialOverride.Bounce = 0f;
             Mode = RigidBody2D.ModeEnum.Rigid;
         }
         else if (blockState == BlockState.grounded)
         {
-            //Mass = 2;
             PhysicsMaterialOverride.Bounce = 0f;
             Mode = RigidBody2D.ModeEnum.Character;
         }
         else if (blockState == BlockState.floating)
         {
-            //Mass = 2;
             PhysicsMaterialOverride.Bounce = 1;
             Mode = RigidBody2D.ModeEnum.Rigid;
         }
@@ -82,6 +74,8 @@ public class WhiteBlock : RigidBody2D
             blockState = BlockState.grounded;
             throw new NotImplementedException();
         }
+
+        GetNode<RichTextLabel>("RichTextLabel").Text = blockState.ToString();
 
     }
 
